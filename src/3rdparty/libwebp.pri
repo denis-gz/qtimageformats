@@ -123,7 +123,9 @@ integrity {
     QMAKE_CFLAGS += -c99
 }
 
-equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
+equals(QT_ARCH, arm64)|contains(QMAKE_APPLE_DEVICE_ARCHS, arm64): cpu_has_neon = 1
+
+equals(QT_ARCH, arm)|equals(cpu_has_neon, 1) {
     SOURCES_FOR_NEON += \
         $$PWD/libwebp/src/dsp/alpha_processing_neon.c \
         $$PWD/libwebp/src/dsp/dec_neon.c \
@@ -135,7 +137,7 @@ equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
         $$PWD/libwebp/src/dsp/upsampling_neon.c \
         $$PWD/libwebp/src/dsp/yuv_neon.c
 
-    contains(QT_CPU_FEATURES.$$QT_ARCH, neon) {
+    contains(QT_CPU_FEATURES.$$QT_ARCH, neon)|equals(cpu_has_neon, 1) {
         # Default compiler settings include this feature, so just add to SOURCES
         SOURCES += $$SOURCES_FOR_NEON
     } else {
